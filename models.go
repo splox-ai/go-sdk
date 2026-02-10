@@ -331,3 +331,53 @@ type DailyActivityResponse struct {
 	Data []DailyActivity `json:"data"`
 	Days int             `json:"days"`
 }
+
+// --- MCP Catalog ---
+
+type MCPCatalogItem struct {
+	ID            string         `json:"id"`
+	Name          string         `json:"name"`
+	Description   *string        `json:"description,omitempty"`
+	URL           string         `json:"url"`
+	TransportType string         `json:"transport_type"`
+	AuthType      string         `json:"auth_type"`
+	AuthConfig    map[string]any `json:"auth_config,omitempty"`
+	ImageURL      *string        `json:"image_url,omitempty"`
+	Category      *string        `json:"category,omitempty"`
+	IsFeatured    bool           `json:"is_featured"`
+	DisplayOrder  *int64         `json:"display_order,omitempty"`
+	CreatedAt     string         `json:"created_at"`
+	UpdatedAt     string         `json:"updated_at"`
+}
+
+type MCPCatalogResponse struct {
+	MCPServer *MCPCatalogItem `json:"mcp_server"`
+}
+
+type MCPCatalogListResponse struct {
+	MCPServers  []MCPCatalogItem `json:"mcp_servers"`
+	CurrentPage int              `json:"current_page"`
+	PerPage     int              `json:"per_page"`
+	TotalCount  int              `json:"total_count"`
+	TotalPages  int              `json:"total_pages"`
+}
+
+// --- MCP Connections ---
+
+type MCPConnection struct {
+	ID            string         `json:"id"`
+	UserID        string         `json:"user_id"`
+	Name          string         `json:"name"`
+	URL           string         `json:"url"`
+	ImageURL      *string        `json:"image_url,omitempty"`
+	TransportType string         `json:"transport_type"`
+	AuthType      string         `json:"auth_type"`
+	AuthConfig    map[string]any `json:"auth_config,omitempty"`
+	EndUserID     *string        `json:"end_user_id,omitempty"`
+	CreatedAt     string         `json:"created_at"`
+}
+
+type MCPConnectionListResponse struct {
+	Connections []MCPConnection `json:"connections"`
+	Total       int             `json:"total"`
+}

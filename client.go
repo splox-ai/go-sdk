@@ -33,6 +33,7 @@ type Client struct {
 	Events    *EventService
 	Billing   *BillingService
 	Memory    *MemoryService
+	MCP       *MCPService
 
 	baseURL    string
 	apiKey     string
@@ -82,6 +83,7 @@ func NewClient(apiKey string, opts ...Option) *Client {
 	c.Events = &EventService{client: c}
 	c.Billing = &BillingService{client: c}
 	c.Memory = &MemoryService{client: c}
+	c.MCP = &MCPService{client: c}
 
 	return c
 }
