@@ -1,6 +1,6 @@
 # Splox Go SDK
 
-Official Go client for the [Splox API](https://docs.splox.io) — run workflows, manage chats, and monitor execution programmatically.
+Official Go client for the [Splox API](https://docs.splox.io) — run workflows, manage chats, browse the MCP catalog, and monitor execution programmatically.
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/splox-ai/go-sdk.svg)](https://pkg.go.dev/github.com/splox-ai/go-sdk)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -329,6 +329,71 @@ client.Memory.Delete(ctx, "session-id", &splox.MemoryDeleteParams{
 })
 ```
 
+## MCP (Model Context Protocol)
+
+Browse the MCP server catalog, manage end-user connections, and generate credential-submission links.
+
+### Catalog
+
+```go
+// Search the MCP catalog
+catalog, _ := client.MCP.ListCatalog(ctx, &splox.CatalogParams{
+	Search:  "github",
+	PerPage: 10,
+})
+for _, server := range catalog.MCPServers {
+	fmt.Printf("%s — %s\n", server.Name, server.URL)
+}
+
+// Get featured servers
+featured, _ := client.MCP.ListCatalog(ctx, &splox.CatalogParams{Featured: true})
+
+// Get a single catalog item
+item, _ := client.MCP.GetCatalogItem(ctx, "mcp-server-id")
+fmt.Println(item.Name, item.AuthType)
+```
+
+### Connections
+
+```go
+// List all end-user connections
+conns, _ := client.MCP.ListConnections(ctx, nil)
+fmt.Printf("%d connections\n", conns.Total)
+
+// Filter by MCP server or end-user
+conns, _ = client.MCP.ListConnections(ctx, &splox.ConnectionParams{
+	MCPServerID: "server-id",
+	EndUserID:   "user-123",
+})
+
+// Delete a connection
+_ = client.MCP.DeleteConnection(ctx, "connection-id")
+```
+
+### Connection Token & Link
+
+Generate signed JWTs for end-user credential submission — no API call required:
+
+```go
+// Generate a token (expires in 1 hour)
+token, _ := splox.GenerateConnectionToken(
+	"mcp-server-id",
+	"owner-user-id",
+	"end-user-id",
+	"your-credentials-encryption-key",
+)
+
+// Generate a full connection link
+link, _ := splox.GenerateConnectionLink(
+	"https://app.splox.io",
+	"mcp-server-id",
+	"owner-user-id",
+	"end-user-id",
+	"your-credentials-encryption-key",
+)
+// → https://app.splox.io/tools/connect?token=eyJhbG...
+```
+
 ## Webhooks
 
 ```go
@@ -420,6 +485,22 @@ if err != nil {
 | `Clear(ctx, nodeID, MemoryClearParams)` | `*MemoryActionResponse` | Remove all messages |
 | `Export(ctx, nodeID, MemoryExportParams)` | `*MemoryActionResponse` | Export all messages |
 | `Delete(ctx, memoryID, *MemoryDeleteParams)` | `error` | Delete a memory instance |
+
+### `client.MCP`
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `ListCatalog(ctx, *CatalogParams)` | `*MCPCatalogListResponse` | Search/list MCP catalog (paginated) |
+| `GetCatalogItem(ctx, id)` | `*MCPCatalogItem` | Get a single catalog item |
+| `ListConnections(ctx, *ConnectionParams)` | `*MCPConnectionListResponse` | List end-user connections |
+| `DeleteConnection(ctx, id)` | `error` | Delete an end-user connection |
+
+### Standalone functions
+
+| Function | Returns | Description |
+|----------|---------|-------------|
+| `GenerateConnectionToken(serverID, ownerID, endUserID, key)` | `(string, error)` | Create a signed JWT (1 hr expiry) |
+| `GenerateConnectionLink(baseURL, serverID, ownerID, endUserID, key)` | `(string, error)` | Build a full connection URL |
 
 ## Requirements
 
