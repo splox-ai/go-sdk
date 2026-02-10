@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.exe
+*.test
+*.out
+vendor/
+dist/
