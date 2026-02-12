@@ -393,38 +393,34 @@ type MCPExecuteToolResponse struct {
 	IsError bool                 `json:"is_error"`
 }
 
-type MCPToolSummary struct {
-	Slug        string `json:"slug"`
-	Description string `json:"description,omitempty"`
+type UserMCPServer struct {
+	ID                  string  `json:"id"`
+	UserID              string  `json:"user_id"`
+	Name                string  `json:"name"`
+	URL                 string  `json:"url"`
+	ImageURL            *string `json:"image_url,omitempty"`
+	TransportType       string  `json:"transport_type"`
+	AuthType            string  `json:"auth_type"`
+	IsSystem            bool    `json:"is_system,omitempty"`
+	CredentialExpiresAt *string `json:"credential_expires_at,omitempty"`
+	CreatedAt           string  `json:"created_at"`
+	UpdatedAt           string  `json:"updated_at"`
+	Status              string  `json:"status,omitempty"`
+	HasCredential       bool    `json:"has_credential,omitempty"`
 }
 
-type MCPConnectionRef struct {
-	MCPServerID string `json:"mcp_server_id"`
-	Name        string `json:"name"`
+type UserMCPServerListResponse struct {
+	Servers []UserMCPServer `json:"servers"`
+	Total   int             `json:"total"`
 }
 
-type MCPUserConnectionGroup struct {
-	Tools       []MCPToolSummary   `json:"tools"`
-	MCPURL      string             `json:"mcp_url"`
-	Connections []MCPConnectionRef `json:"connections"`
+type MCPServerToolOption struct {
+	Label string `json:"label"`
+	Value string `json:"value"`
 }
 
-type MCPUserConnectionsResponse struct {
-	Connections []MCPUserConnectionGroup `json:"connections"`
-	Total       int                      `json:"total"`
-}
-
-type MCPSearchResult struct {
-	Name            string `json:"name"`
-	Description     string `json:"description,omitempty"`
-	IsUserConnected bool   `json:"is_user_connected"`
-	ConnectLink     string `json:"connect_link,omitempty"`
-	MCPURL          string `json:"mcp_url,omitempty"`
-}
-
-type MCPSearchResponse struct {
-	Results []MCPSearchResult `json:"results"`
-	Total   int               `json:"total"`
-	Limit   int               `json:"limit"`
-	Offset  int               `json:"offset"`
+type MCPServerToolsResponse struct {
+	Options []MCPServerToolOption `json:"options"`
+	Total   int                   `json:"total"`
+	Limit   int                   `json:"limit"`
 }

@@ -118,39 +118,19 @@ func (s *MCPService) ExecuteTool(ctx context.Context, params ExecuteToolParams) 
 	return &resp, nil
 }
 
-// ListUserConnections lists caller-owned MCP connections grouped by MCP URL.
-func (s *MCPService) ListUserConnections(ctx context.Context) (*MCPUserConnectionsResponse, error) {
-	var resp MCPUserConnectionsResponse
-	if err := s.client.do(ctx, "POST", "/mcp-tools/list-user-connections", map[string]any{}, &resp); err != nil {
+// ListUserServers lists caller-owned MCP servers.
+func (s *MCPService) ListUserServers(ctx context.Context) (*UserMCPServerListResponse, error) {
+	var resp UserMCPServerListResponse
+	if err := s.client.do(ctx, "GET", "/user-mcp-servers", nil, &resp); err != nil {
 		return nil, err
 	}
 	return &resp, nil
 }
 
-// SearchParams are optional parameters for [MCPService.Search].
-type SearchParams struct {
-	SearchQuery string `json:"search_query,omitempty"`
-	Limit       int    `json:"limit,omitempty"`
-	Offset      int    `json:"offset,omitempty"`
-}
-
-// Search finds MCP servers and returns connection status data.
-func (s *MCPService) Search(ctx context.Context, params *SearchParams) (*MCPSearchResponse, error) {
-	body := map[string]any{}
-	if params != nil {
-		if params.SearchQuery != "" {
-			body["search_query"] = params.SearchQuery
-		}
-		if params.Limit > 0 {
-			body["limit"] = params.Limit
-		}
-		if params.Offset > 0 {
-			body["offset"] = params.Offset
-		}
-	}
-
-	var resp MCPSearchResponse
-	if err := s.client.do(ctx, "POST", "/mcp-tools/search", body, &resp); err != nil {
+// GetServerTools lists tools for a caller-owned MCP server.
+func (s *MCPService) GetServerTools(ctx context.Context, mcpServerID string) (*MCPServerToolsResponse, error) {
+	var resp MCPServerToolsResponse
+	if err := s.client.do(ctx, "GET", "/user-mcp-servers/"+mcpServerID+"/tools", nil, &resp); err != nil {
 		return nil, err
 	}
 	return &resp, nil

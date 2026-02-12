@@ -34,20 +34,30 @@ func TestMCPDiscoveryIntegration(t *testing.T) {
 
 	searchQuery := os.Getenv("SPLOX_MCP_SEARCH_QUERY")
 
-	conns, err := client.MCP.ListUserConnections(ctx)
+	catalog, err := client.MCP.ListCatalog(ctx, &splox.CatalogParams{Search: searchQuery, PerPage: 10})
 	if err != nil {
-		t.Fatalf("list user connections: %v", err)
+		t.Fatalf("list catalog: %v", err)
 	}
-	if conns.Total < 0 {
-		t.Fatalf("invalid total: %d", conns.Total)
+	if catalog.TotalCount < 0 {
+		t.Fatalf("invalid total_count: %d", catalog.TotalCount)
 	}
 
-	search, err := client.MCP.Search(ctx, &splox.SearchParams{SearchQuery: searchQuery, Limit: 10, Offset: 0})
+	servers, err := client.MCP.ListUserServers(ctx)
 	if err != nil {
-		t.Fatalf("search mcp: %v", err)
+		t.Fatalf("list user servers: %v", err)
 	}
-	if search.Limit < 0 || search.Offset < 0 {
-		t.Fatalf("invalid pagination: limit=%d offset=%d", search.Limit, search.Offset)
+	if servers.Total < 0 {
+		t.Fatalf("invalid total: %d", servers.Total)
+	}
+
+	if len(servers.Servers) > 0 {
+		tools, err := client.MCP.GetServerTools(ctx, servers.Servers[0].ID)
+		if err != nil {
+			t.Fatalf("get server tools: %v", err)
+		}
+		if tools.Total < 0 {
+			t.Fatalf("invalid tools total: %d", tools.Total)
+		}
 	}
 }
 
