@@ -42,16 +42,16 @@ func TestMCPDiscoveryIntegration(t *testing.T) {
 		t.Fatalf("invalid total_count: %d", catalog.TotalCount)
 	}
 
-	servers, err := client.MCP.ListUserServers(ctx)
+	servers, err := client.MCP.ListConnections(ctx, &splox.ConnectionParams{Scope: "owner_user"})
 	if err != nil {
-		t.Fatalf("list user servers: %v", err)
+		t.Fatalf("list server scope connections: %v", err)
 	}
 	if servers.Total < 0 {
 		t.Fatalf("invalid total: %d", servers.Total)
 	}
 
-	if len(servers.Servers) > 0 {
-		tools, err := client.MCP.GetServerTools(ctx, servers.Servers[0].ID)
+	if len(servers.Connections) > 0 {
+		tools, err := client.MCP.GetServerTools(ctx, servers.Connections[0].ID)
 		if err != nil {
 			t.Fatalf("get server tools: %v", err)
 		}

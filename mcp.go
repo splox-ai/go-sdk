@@ -69,6 +69,8 @@ func (s *MCPService) GetCatalogItem(ctx context.Context, id string) (*MCPCatalog
 
 // ConnectionParams are optional filters for [MCPService.ListConnections].
 type ConnectionParams struct {
+	// Scope controls which identity bucket is listed: "end_user" (default) or "owner_user".
+	Scope       string
 	MCPServerID string
 	EndUserID   string
 }
@@ -77,6 +79,9 @@ type ConnectionParams struct {
 func (s *MCPService) ListConnections(ctx context.Context, params *ConnectionParams) (*MCPConnectionListResponse, error) {
 	v := url.Values{}
 	if params != nil {
+		if params.Scope != "" {
+			v.Set("scope", params.Scope)
+		}
 		if params.MCPServerID != "" {
 			v.Set("mcp_server_id", params.MCPServerID)
 		}
@@ -113,15 +118,6 @@ func (s *MCPService) ExecuteTool(ctx context.Context, params ExecuteToolParams) 
 
 	var resp MCPExecuteToolResponse
 	if err := s.client.do(ctx, "POST", "/mcp-tools/execute", body, &resp); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// ListUserServers lists caller-owned MCP servers.
-func (s *MCPService) ListUserServers(ctx context.Context) (*UserMCPServerListResponse, error) {
-	var resp UserMCPServerListResponse
-	if err := s.client.do(ctx, "GET", "/user-mcp-servers", nil, &resp); err != nil {
 		return nil, err
 	}
 	return &resp, nil

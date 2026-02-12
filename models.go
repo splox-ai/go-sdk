@@ -393,27 +393,6 @@ type MCPExecuteToolResponse struct {
 	IsError bool                 `json:"is_error"`
 }
 
-type UserMCPServer struct {
-	ID                  string  `json:"id"`
-	UserID              string  `json:"user_id"`
-	Name                string  `json:"name"`
-	URL                 string  `json:"url"`
-	ImageURL            *string `json:"image_url,omitempty"`
-	TransportType       string  `json:"transport_type"`
-	AuthType            string  `json:"auth_type"`
-	IsSystem            bool    `json:"is_system,omitempty"`
-	CredentialExpiresAt *string `json:"credential_expires_at,omitempty"`
-	CreatedAt           string  `json:"created_at"`
-	UpdatedAt           string  `json:"updated_at"`
-	Status              string  `json:"status,omitempty"`
-	HasCredential       bool    `json:"has_credential,omitempty"`
-}
-
-type UserMCPServerListResponse struct {
-	Servers []UserMCPServer `json:"servers"`
-	Total   int             `json:"total"`
-}
-
 type MCPServerToolOption struct {
 	Label string `json:"label"`
 	Value string `json:"value"`

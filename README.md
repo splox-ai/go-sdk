@@ -360,6 +360,11 @@ fmt.Println(item.Name, item.AuthType)
 conns, _ := client.MCP.ListConnections(ctx, nil)
 fmt.Printf("%d connections\n", conns.Total)
 
+// List owner-user MCP servers through the same endpoint
+ownerServers, _ := client.MCP.ListConnections(ctx, &splox.ConnectionParams{
+	Scope: "owner_user",
+})
+
 // Filter by MCP server or end-user
 conns, _ = client.MCP.ListConnections(ctx, &splox.ConnectionParams{
 	MCPServerID: "server-id",
@@ -492,7 +497,7 @@ if err != nil {
 |--------|---------|-------------|
 | `ListCatalog(ctx, *CatalogParams)` | `*MCPCatalogListResponse` | Search/list MCP catalog (paginated) |
 | `GetCatalogItem(ctx, id)` | `*MCPCatalogItem` | Get a single catalog item |
-| `ListConnections(ctx, *ConnectionParams)` | `*MCPConnectionListResponse` | List end-user connections |
+| `ListConnections(ctx, *ConnectionParams)` | `*MCPConnectionListResponse` | List MCP links by identity scope (`end_user` or `owner_user`) |
 | `DeleteConnection(ctx, id)` | `error` | Delete an end-user connection |
 
 ### Standalone functions
