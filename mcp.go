@@ -97,6 +97,65 @@ func (s *MCPService) DeleteConnection(ctx context.Context, id string) error {
 	return s.client.do(ctx, "DELETE", "/mcp-connections/"+id, nil, nil)
 }
 
+// ExecuteToolParams are parameters for [MCPService.ExecuteTool].
+type ExecuteToolParams struct {
+	MCPServerID string         `json:"mcp_server_id"`
+	ToolSlug    string         `json:"tool_slug"`
+	Args        map[string]any `json:"args,omitempty"`
+}
+
+// ExecuteTool executes a tool on a caller-owned MCP server.
+func (s *MCPService) ExecuteTool(ctx context.Context, params ExecuteToolParams) (*MCPExecuteToolResponse, error) {
+	body := params
+	if body.Args == nil {
+		body.Args = map[string]any{}
+	}
+
+	var resp MCPExecuteToolResponse
+	if err := s.client.do(ctx, "POST", "/mcp-tools/execute", body, &resp); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// ListUserConnections lists caller-owned MCP connections grouped by MCP URL.
+func (s *MCPService) ListUserConnections(ctx context.Context) (*MCPUserConnectionsResponse, error) {
+	var resp MCPUserConnectionsResponse
+	if err := s.client.do(ctx, "POST", "/mcp-tools/list-user-connections", map[string]any{}, &resp); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// SearchParams are optional parameters for [MCPService.Search].
+type SearchParams struct {
+	SearchQuery string `json:"search_query,omitempty"`
+	Limit       int    `json:"limit,omitempty"`
+	Offset      int    `json:"offset,omitempty"`
+}
+
+// Search finds MCP servers and returns connection status data.
+func (s *MCPService) Search(ctx context.Context, params *SearchParams) (*MCPSearchResponse, error) {
+	body := map[string]any{}
+	if params != nil {
+		if params.SearchQuery != "" {
+			body["search_query"] = params.SearchQuery
+		}
+		if params.Limit > 0 {
+			body["limit"] = params.Limit
+		}
+		if params.Offset > 0 {
+			body["offset"] = params.Offset
+		}
+	}
+
+	var resp MCPSearchResponse
+	if err := s.client.do(ctx, "POST", "/mcp-tools/search", body, &resp); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
 // --------------------------------------------------------------------------
 // Connection Token (client-side JWT generation)
 // --------------------------------------------------------------------------

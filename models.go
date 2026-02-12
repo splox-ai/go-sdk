@@ -61,20 +61,20 @@ type Edge struct {
 // --- Execution ---
 
 type WorkflowRequest struct {
-	ID                        string         `json:"id"`
-	WorkflowVersionID         string         `json:"workflow_version_id"`
-	StartNodeID               string         `json:"start_node_id"`
-	Status                    string         `json:"status"`
-	CreatedAt                 string         `json:"created_at"`
-	UserID                    string         `json:"user_id,omitempty"`
-	BillingUserID             string         `json:"billing_user_id,omitempty"`
-	ParentNodeExecutionID     string         `json:"parent_node_execution_id,omitempty"`
-	ParentWorkflowRequestID   string         `json:"parent_workflow_request_id,omitempty"`
-	ChatID                    string         `json:"chat_id,omitempty"`
-	Payload                   map[string]any `json:"payload,omitempty"`
-	Metadata                  map[string]any `json:"metadata,omitempty"`
-	StartedAt                 string         `json:"started_at,omitempty"`
-	CompletedAt               string         `json:"completed_at,omitempty"`
+	ID                      string         `json:"id"`
+	WorkflowVersionID       string         `json:"workflow_version_id"`
+	StartNodeID             string         `json:"start_node_id"`
+	Status                  string         `json:"status"`
+	CreatedAt               string         `json:"created_at"`
+	UserID                  string         `json:"user_id,omitempty"`
+	BillingUserID           string         `json:"billing_user_id,omitempty"`
+	ParentNodeExecutionID   string         `json:"parent_node_execution_id,omitempty"`
+	ParentWorkflowRequestID string         `json:"parent_workflow_request_id,omitempty"`
+	ChatID                  string         `json:"chat_id,omitempty"`
+	Payload                 map[string]any `json:"payload,omitempty"`
+	Metadata                map[string]any `json:"metadata,omitempty"`
+	StartedAt               string         `json:"started_at,omitempty"`
+	CompletedAt             string         `json:"completed_at,omitempty"`
 }
 
 type NodeExecution struct {
@@ -103,20 +103,20 @@ type ChildExecution struct {
 }
 
 type ExecutionNode struct {
-	ID               string           `json:"id"`
-	NodeID           string           `json:"node_id"`
-	Status           string           `json:"status"`
-	NodeLabel        string           `json:"node_label,omitempty"`
-	NodeType         string           `json:"node_type,omitempty"`
-	InputData        map[string]any   `json:"input_data,omitempty"`
-	OutputData       map[string]any   `json:"output_data,omitempty"`
-	CreatedAt        string           `json:"created_at,omitempty"`
-	CompletedAt      string           `json:"completed_at,omitempty"`
-	FailedAt         string           `json:"failed_at,omitempty"`
-	AttemptCount     *int             `json:"attempt_count,omitempty"`
-	ChildExecutions  []ChildExecution `json:"child_executions,omitempty"`
-	TotalChildren    *int             `json:"total_children,omitempty"`
-	HasMoreChildren  *bool            `json:"has_more_children,omitempty"`
+	ID              string           `json:"id"`
+	NodeID          string           `json:"node_id"`
+	Status          string           `json:"status"`
+	NodeLabel       string           `json:"node_label,omitempty"`
+	NodeType        string           `json:"node_type,omitempty"`
+	InputData       map[string]any   `json:"input_data,omitempty"`
+	OutputData      map[string]any   `json:"output_data,omitempty"`
+	CreatedAt       string           `json:"created_at,omitempty"`
+	CompletedAt     string           `json:"completed_at,omitempty"`
+	FailedAt        string           `json:"failed_at,omitempty"`
+	AttemptCount    *int             `json:"attempt_count,omitempty"`
+	ChildExecutions []ChildExecution `json:"child_executions,omitempty"`
+	TotalChildren   *int             `json:"total_children,omitempty"`
+	HasMoreChildren *bool            `json:"has_more_children,omitempty"`
 }
 
 type ExecutionTree struct {
@@ -282,18 +282,18 @@ type UserBalance struct {
 }
 
 type BalanceTransaction struct {
-	ID                    string          `json:"id"`
-	UserID                string          `json:"user_id"`
-	Amount                int64           `json:"amount"`
-	Currency              string          `json:"currency"`
-	Type                  string          `json:"type"`
-	Status                string          `json:"status"`
-	Description           *string         `json:"description,omitempty"`
-	Metadata              map[string]any  `json:"metadata,omitempty"`
-	StripePaymentIntentID *string         `json:"stripe_payment_intent_id,omitempty"`
-	StripeChargeID        *string         `json:"stripe_charge_id,omitempty"`
-	CreatedAt             string          `json:"created_at"`
-	UpdatedAt             string          `json:"updated_at"`
+	ID                    string         `json:"id"`
+	UserID                string         `json:"user_id"`
+	Amount                int64          `json:"amount"`
+	Currency              string         `json:"currency"`
+	Type                  string         `json:"type"`
+	Status                string         `json:"status"`
+	Description           *string        `json:"description,omitempty"`
+	Metadata              map[string]any `json:"metadata,omitempty"`
+	StripePaymentIntentID *string        `json:"stripe_payment_intent_id,omitempty"`
+	StripeChargeID        *string        `json:"stripe_charge_id,omitempty"`
+	CreatedAt             string         `json:"created_at"`
+	UpdatedAt             string         `json:"updated_at"`
 }
 
 type TransactionPagination struct {
@@ -380,4 +380,51 @@ type MCPConnection struct {
 type MCPConnectionListResponse struct {
 	Connections []MCPConnection `json:"connections"`
 	Total       int             `json:"total"`
+}
+
+type MCPExecuteToolResult struct {
+	Content           []map[string]any `json:"content,omitempty"`
+	StructuredContent any              `json:"structuredContent,omitempty"`
+	IsError           bool             `json:"isError,omitempty"`
+}
+
+type MCPExecuteToolResponse struct {
+	Result  MCPExecuteToolResult `json:"result"`
+	IsError bool                 `json:"is_error"`
+}
+
+type MCPToolSummary struct {
+	Slug        string `json:"slug"`
+	Description string `json:"description,omitempty"`
+}
+
+type MCPConnectionRef struct {
+	MCPServerID string `json:"mcp_server_id"`
+	Name        string `json:"name"`
+}
+
+type MCPUserConnectionGroup struct {
+	Tools       []MCPToolSummary   `json:"tools"`
+	MCPURL      string             `json:"mcp_url"`
+	Connections []MCPConnectionRef `json:"connections"`
+}
+
+type MCPUserConnectionsResponse struct {
+	Connections []MCPUserConnectionGroup `json:"connections"`
+	Total       int                      `json:"total"`
+}
+
+type MCPSearchResult struct {
+	Name            string `json:"name"`
+	Description     string `json:"description,omitempty"`
+	IsUserConnected bool   `json:"is_user_connected"`
+	ConnectLink     string `json:"connect_link,omitempty"`
+	MCPURL          string `json:"mcp_url,omitempty"`
+}
+
+type MCPSearchResponse struct {
+	Results []MCPSearchResult `json:"results"`
+	Total   int               `json:"total"`
+	Limit   int               `json:"limit"`
+	Offset  int               `json:"offset"`
 }
