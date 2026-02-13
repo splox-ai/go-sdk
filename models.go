@@ -403,3 +403,55 @@ type MCPServerToolsResponse struct {
 	Total   int                   `json:"total"`
 	Limit   int                   `json:"limit"`
 }
+
+// --- Workflow Secrets ---
+
+// WorkflowSecretMetadata represents a workflow secret (value is never exposed).
+type WorkflowSecretMetadata struct {
+	ID         string  `json:"id"`
+	WorkflowID string  `json:"workflow_id"`
+	Key        string  `json:"key"`
+	SecretType string  `json:"secret_type"`
+	EndUserID  *string `json:"end_user_id,omitempty"`
+	CreatedAt  string  `json:"created_at"`
+	UpdatedAt  string  `json:"updated_at"`
+}
+
+// EndUserSecretsSummary groups secrets by end-user.
+type EndUserSecretsSummary struct {
+	EndUserID string                   `json:"end_user_id"`
+	Secrets   []WorkflowSecretMetadata `json:"secrets"`
+}
+
+// GenerateSecretsLinkResponse is the response from generating a secrets submission link.
+type GenerateSecretsLinkResponse struct {
+	Link      string `json:"link"`
+	Token     string `json:"token"`
+	EndUserID string `json:"end_user_id"`
+	ExpiresIn string `json:"expires_in"`
+}
+
+// SecretActionResponse is the response from setting or deleting a secret.
+type SecretActionResponse struct {
+	Success bool   `json:"success"`
+	Key     string `json:"key"`
+}
+
+// SetEnvSecretParams are the parameters for setting an env-type secret.
+type SetEnvSecretParams struct {
+	Key       string  `json:"key"`
+	Value     string  `json:"value"`
+	EndUserID *string `json:"end_user_id,omitempty"`
+}
+
+// SetFileSecretParams are the parameters for setting a file-type secret.
+type SetFileSecretParams struct {
+	Key       string  `json:"key"`
+	S3URL     string  `json:"s3_url"`
+	EndUserID *string `json:"end_user_id,omitempty"`
+}
+
+// GenerateSecretsLinkParams are the parameters for generating a secrets link.
+type GenerateSecretsLinkParams struct {
+	EndUserID string `json:"end_user_id"`
+}

@@ -188,3 +188,79 @@ func (s *WorkflowService) RunAndWait(ctx context.Context, params RunParams, time
 	// Stream ended without terminal status — fetch tree anyway
 	return s.GetExecutionTree(ctx, result.WorkflowRequestID)
 }
+
+// --- Secrets ---
+
+// ListSecretsParams are optional parameters for [WorkflowService.ListSecrets].
+type ListSecretsParams struct {
+	EndUserID string
+}
+
+// ListSecrets returns all secret keys for a workflow (values are never returned).
+func (s *WorkflowService) ListSecrets(ctx context.Context, workflowID string, params *ListSecretsParams) ([]WorkflowSecretMetadata, error) {
+	v := url.Values{}
+	if params != nil && params.EndUserID != "" {
+		v.Set("end_user_id", params.EndUserID)
+	}
+
+	var resp []WorkflowSecretMetadata
+	if err := s.client.do(ctx, "GET", addParams("/workflows/"+workflowID+"/secrets", v), nil, &resp); err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// SetEnvSecret creates or updates an environment-variable secret.
+func (s *WorkflowService) SetEnvSecret(ctx context.Context, workflowID string, params SetEnvSecretParams) (*SecretActionResponse, error) {
+	var resp SecretActionResponse
+	if err := s.client.do(ctx, "POST", "/workflows/"+workflowID+"/secrets/env", params, &resp); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// SetFileSecret creates or updates a file-type secret (S3 URL).
+func (s *WorkflowService) SetFileSecret(ctx context.Context, workflowID string, params SetFileSecretParams) (*SecretActionResponse, error) {
+	var resp SecretActionResponse
+	if err := s.client.do(ctx, "POST", "/workflows/"+workflowID+"/secrets/file", params, &resp); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// DeleteSecretParams are optional parameters for [WorkflowService.DeleteSecret].
+type DeleteSecretParams struct {
+	EndUserID string
+}
+
+// DeleteSecret removes a secret from a workflow.
+func (s *WorkflowService) DeleteSecret(ctx context.Context, workflowID string, key string, params *DeleteSecretParams) (*SecretActionResponse, error) {
+	v := url.Values{}
+	if params != nil && params.EndUserID != "" {
+		v.Set("end_user_id", params.EndUserID)
+	}
+
+	var resp SecretActionResponse
+	if err := s.client.do(ctx, "DELETE", addParams("/workflows/"+workflowID+"/secrets/"+key, v), nil, &resp); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// ListEndUserSecrets returns all end-user secrets grouped by end_user_id.
+func (s *WorkflowService) ListEndUserSecrets(ctx context.Context, workflowID string) ([]EndUserSecretsSummary, error) {
+	var resp []EndUserSecretsSummary
+	if err := s.client.do(ctx, "GET", "/workflows/"+workflowID+"/secrets/end-users", nil, &resp); err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// GenerateSecretsLink generates a public link for an end-user to submit secrets.
+func (s *WorkflowService) GenerateSecretsLink(ctx context.Context, workflowID string, params GenerateSecretsLinkParams) (*GenerateSecretsLinkResponse, error) {
+	var resp GenerateSecretsLinkResponse
+	if err := s.client.do(ctx, "POST", "/workflows/"+workflowID+"/secrets/generate-link", params, &resp); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
