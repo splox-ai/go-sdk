@@ -68,10 +68,10 @@ func (s *WorkflowService) ListVersions(ctx context.Context, workflowID string) (
 	return &resp, nil
 }
 
-// GetStartNodes returns the start nodes for a workflow version.
-func (s *WorkflowService) GetStartNodes(ctx context.Context, workflowVersionID string) (*StartNodesResponse, error) {
-	var resp StartNodesResponse
-	if err := s.client.do(ctx, "GET", "/workflows/"+workflowVersionID+"/start-nodes", nil, &resp); err != nil {
+// GetEntryNodes returns the entry nodes (agent nodes) for a workflow version.
+func (s *WorkflowService) GetEntryNodes(ctx context.Context, workflowVersionID string) (*EntryNodesResponse, error) {
+	var resp EntryNodesResponse
+	if err := s.client.do(ctx, "GET", "/workflows/"+workflowVersionID+"/entry-nodes", nil, &resp); err != nil {
 		return nil, err
 	}
 	return &resp, nil
@@ -81,7 +81,7 @@ func (s *WorkflowService) GetStartNodes(ctx context.Context, workflowVersionID s
 type RunParams struct {
 	WorkflowVersionID string                `json:"workflow_version_id"`
 	ChatID            string                `json:"chat_id"`
-	StartNodeID       string                `json:"start_node_id"`
+	EntryNodeIDs      []string              `json:"entry_node_ids,omitempty"`    // Multi-select agent entry nodes
 	Query             string                `json:"query"`
 	Files             []WorkflowRequestFile `json:"files,omitempty"`
 	AdditionalParams  map[string]any        `json:"additional_params,omitempty"`

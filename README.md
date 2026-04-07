@@ -41,9 +41,9 @@ func main() {
 	full, _ := client.Workflows.Get(ctx, wf.ID)
 	version := full.WorkflowVersion
 
-	// Find start node
-	startNodes, _ := client.Workflows.GetStartNodes(ctx, version.ID)
-	startNode := startNodes.Nodes[0]
+	// Find entry nodes
+	entryNodes, _ := client.Workflows.GetEntryNodes(ctx, version.ID)
+	entryNode := entryNodes.Nodes[0]
 
 	// Create a chat session
 	chat, _ := client.Chats.Create(ctx, splox.CreateChatParams{
@@ -55,7 +55,7 @@ func main() {
 	result, _ := client.Workflows.Run(ctx, splox.RunParams{
 		WorkflowVersionID: version.ID,
 		ChatID:            chat.ID,
-		StartNodeID:       startNode.ID,
+		EntryNodeIDs:      []string{entryNode.ID},
 		Query:             "Summarize the latest sales report",
 	})
 
@@ -171,7 +171,7 @@ Blocks until the workflow reaches a terminal state:
 tree, err := client.Workflows.RunAndWait(ctx, splox.RunParams{
 	WorkflowVersionID: versionID,
 	ChatID:            chatID,
-	StartNodeID:       startNodeID,
+	EntryNodeIDs:      []string{entryNodeID},
 	Query:             "Process this request",
 }, 5*time.Minute)
 if err != nil {
@@ -202,14 +202,14 @@ versions, _ := client.Workflows.ListVersions(ctx, "workflow-id")
 // Get latest version
 version, _ := client.Workflows.GetLatestVersion(ctx, "workflow-id")
 
-// Get start nodes
-startNodes, _ := client.Workflows.GetStartNodes(ctx, "workflow-version-id")
+// Get entry nodes
+entryNodes, _ := client.Workflows.GetEntryNodes(ctx, "workflow-version-id")
 
 // Run with file attachments
 result, _ := client.Workflows.Run(ctx, splox.RunParams{
 	WorkflowVersionID: "version-id",
 	ChatID:            "chat-id",
-	StartNodeID:       "node-id",
+	EntryNodeIDs:      []string{"node-id"},
 	Query:             "Hello!",
 	Files: []splox.WorkflowRequestFile{{
 		URL:         "https://example.com/doc.pdf",
@@ -453,7 +453,7 @@ if err != nil {
 | `Get(ctx, workflowID)` | `*WorkflowFullResponse` | Get workflow with nodes, edges, version |
 | `GetLatestVersion(ctx, workflowID)` | `*WorkflowVersion` | Get latest version |
 | `ListVersions(ctx, workflowID)` | `*WorkflowVersionListResponse` | List all versions |
-| `GetStartNodes(ctx, versionID)` | `*StartNodesResponse` | Get start nodes |
+| `GetEntryNodes(ctx, versionID)` | `*EntryNodesResponse` | Get entry nodes |
 | `Run(ctx, RunParams)` | `*RunResponse` | Trigger execution |
 | `Listen(ctx, requestID)` | `*SSEIter` | Stream execution events |
 | `GetExecutionTree(ctx, requestID)` | `*ExecutionTreeResponse` | Get execution hierarchy |

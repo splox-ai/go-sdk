@@ -115,22 +115,22 @@ func TestWorkflowsListVersions(t *testing.T) {
 	}
 }
 
-func TestWorkflowsGetStartNodes(t *testing.T) {
+func TestWorkflowsGetEntryNodes(t *testing.T) {
 	_, client := newTestServer(t, func(w http.ResponseWriter, r *http.Request) {
-		json.NewEncoder(w).Encode(StartNodesResponse{
-			Nodes: []Node{{ID: "n-001", WorkflowVersionID: "ver-001", NodeType: "start", Label: "Start"}},
+		json.NewEncoder(w).Encode(EntryNodesResponse{
+			Nodes: []Node{{ID: "n-001", WorkflowVersionID: "ver-001", NodeType: "agent", Label: "Agent"}},
 		})
 	})
 
-	resp, err := client.Workflows.GetStartNodes(context.Background(), "ver-001")
+	resp, err := client.Workflows.GetEntryNodes(context.Background(), "ver-001")
 	if err != nil {
 		t.Fatal(err)
 	}
 	if len(resp.Nodes) != 1 {
-		t.Fatalf("expected 1 start node, got %d", len(resp.Nodes))
+		t.Fatalf("expected 1 entry node, got %d", len(resp.Nodes))
 	}
-	if resp.Nodes[0].Label != "Start" {
-		t.Errorf("expected Start, got %s", resp.Nodes[0].Label)
+	if resp.Nodes[0].Label != "Agent" {
+		t.Errorf("expected Agent, got %s", resp.Nodes[0].Label)
 	}
 }
 
@@ -155,7 +155,7 @@ func TestWorkflowsRun(t *testing.T) {
 	resp, err := client.Workflows.Run(context.Background(), RunParams{
 		WorkflowVersionID: "ver-001",
 		ChatID:            "chat-001",
-		StartNodeID:       "node-001",
+		EntryNodeIDs:      []string{"node-001"},
 		Query:             "Hello",
 	})
 	if err != nil {
@@ -182,7 +182,7 @@ func TestWorkflowsRunWithFiles(t *testing.T) {
 	resp, err := client.Workflows.Run(context.Background(), RunParams{
 		WorkflowVersionID: "ver-001",
 		ChatID:            "chat-001",
-		StartNodeID:       "node-001",
+		EntryNodeIDs:      []string{"node-001"},
 		Query:             "Analyze this",
 		Files: []WorkflowRequestFile{{
 			URL:         "https://example.com/file.pdf",
@@ -257,7 +257,7 @@ func TestWorkflowsGetHistory(t *testing.T) {
 		}
 		json.NewEncoder(w).Encode(HistoryResponse{
 			Data: []WorkflowRequest{
-				{ID: "req-001", WorkflowVersionID: "ver-001", StartNodeID: "n-001", Status: "completed", CreatedAt: "2025-01-01T00:00:00Z"},
+				{ID: "req-001", WorkflowVersionID: "ver-001", Status: "completed", CreatedAt: "2025-01-01T00:00:00Z"},
 			},
 			Pagination: Pagination{Limit: 5, NextCursor: "req-000", HasMore: true},
 		})

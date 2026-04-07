@@ -63,7 +63,7 @@ type Edge struct {
 type WorkflowRequest struct {
 	ID                      string         `json:"id"`
 	WorkflowVersionID       string         `json:"workflow_version_id"`
-	StartNodeID             string         `json:"start_node_id"`
+	EntryNodeIDs            []string       `json:"entry_node_ids,omitempty"`     // Multi-select agent entry nodes
 	Status                  string         `json:"status"`
 	CreatedAt               string         `json:"created_at"`
 	UserID                  string         `json:"user_id,omitempty"`
@@ -238,7 +238,7 @@ type WorkflowFullResponse struct {
 	Edges           []Edge          `json:"edges"`
 }
 
-type StartNodesResponse struct {
+type EntryNodesResponse struct {
 	Nodes []Node `json:"nodes"`
 }
 
@@ -454,4 +454,36 @@ type SetFileSecretParams struct {
 // GenerateSecretsLinkParams are the parameters for generating a secrets link.
 type GenerateSecretsLinkParams struct {
 	EndUserID string `json:"end_user_id"`
+}
+
+// --- LLM Chat Completions ---
+
+// ChatCompletionMessage is a single message in a chat completion response.
+type ChatCompletionMessage struct {
+	Role    string  `json:"role"`
+	Content *string `json:"content"`
+}
+
+// ChatCompletionChoice is one choice in a chat completion response.
+type ChatCompletionChoice struct {
+	Index        int                  `json:"index"`
+	Message      ChatCompletionMessage `json:"message"`
+	FinishReason *string              `json:"finish_reason"`
+}
+
+// ChatCompletionUsage holds token usage for a chat completion.
+type ChatCompletionUsage struct {
+	PromptTokens     int `json:"prompt_tokens"`
+	CompletionTokens int `json:"completion_tokens"`
+	TotalTokens      int `json:"total_tokens"`
+}
+
+// ChatCompletion is the response from a chat completion request.
+type ChatCompletion struct {
+	ID      string                `json:"id"`
+	Object  string                `json:"object"`
+	Created int64                 `json:"created"`
+	Model   string                `json:"model"`
+	Choices []ChatCompletionChoice `json:"choices"`
+	Usage   *ChatCompletionUsage  `json:"usage,omitempty"`
 }

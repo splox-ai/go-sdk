@@ -16,6 +16,10 @@
 package splox
 
 import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -34,6 +38,7 @@ type Client struct {
 	Billing   *BillingService
 	Memory    *MemoryService
 	MCP       *MCPService
+	LLM       *LLMService
 
 	baseURL    string
 	apiKey     string
@@ -84,6 +89,26 @@ func NewClient(apiKey string, opts ...Option) *Client {
 	c.Billing = &BillingService{client: c}
 	c.Memory = &MemoryService{client: c}
 	c.MCP = &MCPService{client: c}
+	c.LLM = &LLMService{client: c}
 
 	return c
+}
+
+// Notify POSTs data as JSON to webhookURL.
+func (c *Client) Notify(ctx context.Context, webhookURL string, data any) error {
+	body, err := json.Marshal(data)
+	if err != nil {
+		return fmt.Errorf("notify: marshal: %w", err)
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, webhookURL, bytes.NewReader(body))
+	if err != nil {
+		return fmt.Errorf("notify: request: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("notify: %w", err)
+	}
+	resp.Body.Close()
+	return nil
 }

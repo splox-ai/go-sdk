@@ -32,7 +32,7 @@ func TestSSEIterKeepalive(t *testing.T) {
 func TestSSEIterJSONEvent(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/event-stream")
-		fmt.Fprintln(w, `data: {"workflow_request":{"id":"req-1","workflow_version_id":"v1","start_node_id":"n1","status":"completed","created_at":"2025-01-01T00:00:00Z"}}`)
+		fmt.Fprintln(w, `data: {"workflow_request":{"id":"req-1","workflow_version_id":"v1","status":"completed","created_at":"2025-01-01T00:00:00Z"}}`)
 	}))
 	defer srv.Close()
 
@@ -61,7 +61,7 @@ func TestSSEIterJSONEvent(t *testing.T) {
 func TestSSEIterNodeExecution(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/event-stream")
-		fmt.Fprintln(w, `data: {"workflow_request":{"id":"req-1","workflow_version_id":"v1","start_node_id":"n1","status":"in_progress","created_at":"2025-01-01T00:00:00Z"},"node_execution":{"id":"ne-1","workflow_request_id":"req-1","node_id":"n1","workflow_version_id":"v1","status":"completed","output_data":{"text":"Hello world"}}}`)
+		fmt.Fprintln(w, `data: {"workflow_request":{"id":"req-1","workflow_version_id":"v1","status":"in_progress","created_at":"2025-01-01T00:00:00Z"},"node_execution":{"id":"ne-1","workflow_request_id":"req-1","node_id":"n1","workflow_version_id":"v1","status":"completed","output_data":{"text":"Hello world"}}}`)
 	}))
 	defer srv.Close()
 
@@ -142,7 +142,7 @@ func TestSSEIterMultipleEvents(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/event-stream")
 		fmt.Fprintln(w, "data: keepalive")
-		fmt.Fprintln(w, `data: {"workflow_request":{"id":"req-1","workflow_version_id":"v1","start_node_id":"n1","status":"completed","created_at":"2025-01-01T00:00:00Z"}}`)
+		fmt.Fprintln(w, `data: {"workflow_request":{"id":"req-1","workflow_version_id":"v1","status":"completed","created_at":"2025-01-01T00:00:00Z"}}`)
 	}))
 	defer srv.Close()
 

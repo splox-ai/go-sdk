@@ -103,17 +103,17 @@ func TestIntegration(t *testing.T) {
 	}
 	t.Logf("   ✅ Found %d version(s)", len(versionsResp.Versions))
 
-	// 6. Get start nodes
-	t.Log("6) Getting start nodes...")
-	startNodes, err := client.Workflows.GetStartNodes(ctx, version.ID)
+	// 6. Get entry nodes
+	t.Log("6) Getting entry nodes...")
+	entryNodes, err := client.Workflows.GetEntryNodes(ctx, version.ID)
 	if err != nil {
-		t.Fatalf("get start nodes: %v", err)
+		t.Fatalf("get entry nodes: %v", err)
 	}
-	if len(startNodes.Nodes) == 0 {
-		t.Fatal("no start nodes found")
+	if len(entryNodes.Nodes) == 0 {
+		t.Fatal("no entry nodes found")
 	}
-	startNode := startNodes.Nodes[0]
-	t.Logf("   ✅ Found %d start node(s): %s — %s", len(startNodes.Nodes), startNode.ID, startNode.Label)
+	entryNode := entryNodes.Nodes[0]
+	t.Logf("   ✅ Found %d entry node(s): %s — %s", len(entryNodes.Nodes), entryNode.ID, entryNode.Label)
 
 	// 7. Full programmatic flow: create chat → run → listen → get tree
 	t.Log("7) Full programmatic flow (discover → run → wait)...")
@@ -129,7 +129,7 @@ func TestIntegration(t *testing.T) {
 	result, err := client.Workflows.Run(ctx, splox.RunParams{
 		WorkflowVersionID: version.ID,
 		ChatID:            chat.ID,
-		StartNodeID:       startNode.ID,
+		EntryNodeIDs:      []string{entryNode.ID},
 		Query:             "Hello from Go SDK integration test!",
 	})
 	if err != nil {
@@ -178,7 +178,7 @@ func TestIntegration(t *testing.T) {
 	result2, err := client.Workflows.Run(ctx, splox.RunParams{
 		WorkflowVersionID: version.ID,
 		ChatID:            chat.ID,
-		StartNodeID:       startNode.ID,
+		EntryNodeIDs:      []string{entryNode.ID},
 		Query:             "Second message for chat listen",
 	})
 	if err != nil {
@@ -209,7 +209,7 @@ func TestIntegration(t *testing.T) {
 	result3, err := client.Workflows.Run(ctx, splox.RunParams{
 		WorkflowVersionID: version.ID,
 		ChatID:            chat.ID,
-		StartNodeID:       startNode.ID,
+		EntryNodeIDs:      []string{entryNode.ID},
 		Query:             "This should be stopped",
 	})
 	if err != nil {
@@ -233,7 +233,7 @@ func TestIntegration(t *testing.T) {
 	treeResp2, err := client.Workflows.RunAndWait(ctx, splox.RunParams{
 		WorkflowVersionID: version.ID,
 		ChatID:            chat2.ID,
-		StartNodeID:       startNode.ID,
+		EntryNodeIDs:      []string{entryNode.ID},
 		Query:             "Run and wait test from Go",
 	}, 2*time.Minute)
 	if err != nil {
